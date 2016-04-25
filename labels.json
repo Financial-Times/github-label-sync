@@ -7,6 +7,14 @@
 		]
 	},
 	{
+		"name": "type: breaking",
+		"color": "990000",
+		"aliases": [
+			"breaking",
+			"breaking-change"
+		]
+	},
+	{
 		"name": "type: maintenance",
 		"color": "fbca04",
 		"aliases": [
@@ -29,6 +37,13 @@
 		"color": "cc317c",
 		"aliases": [
 			"question"
+		]
+	},
+	{
+		"name": "type: discussion",
+		"color": "cc317c",
+		"aliases": [
+			"discussion"
 		]
 	},
 	{
@@ -62,6 +77,16 @@
 		"color": "e11d21"
 	},
 	{
+		"name": "status: good starter issue",
+		"color": "bfe5bf",
+		"aliases": [
+			"beginner-friendly",
+			"beginner",
+			"good-starter-issue",
+			"starter-issue"
+		]
+	},
+	{
 		"name": "status: help wanted",
 		"color": "bfe5bf",
 		"aliases": [
@@ -72,7 +97,8 @@
 		"name": "status: wontfix",
 		"color": "cccccc",
 		"aliases": [
-			"wontfix"
+			"wontfix",
+			"wont-fix"
 		]
 	},
 	{

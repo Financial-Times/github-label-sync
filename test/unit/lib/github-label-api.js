@@ -68,7 +68,7 @@ describe('lib/github-label-api', () => {
 
 				it('should make a GET request to the repo labels endpoint', () => {
 					assert.calledOnce(instance.apiClient.get);
-					assert.calledWith(instance.apiClient.get, `/repos/${repo}/labels`, {});
+					assert.calledWith(instance.apiClient.get, `/repos/${repo}/labels`, {page: 1, per_page: 100});
 				});
 
 				describe('.then()', () => {
@@ -82,7 +82,7 @@ describe('lib/github-label-api', () => {
 					});
 
 					it('should resolve with the repo labels', () => {
-						assert.strictEqual(resolvedValue, labels);
+						assert.deepEqual(resolvedValue, labels);
 					});
 
 				});

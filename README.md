@@ -46,7 +46,7 @@ Options:
   -h, --help                  output usage information
   -V, --version               output the version number
   -a, --access-token <token>  a GitHub access token (also settable with a GITHUB_ACCESS_TOKEN environment variable)
-  -l, --labels <path>         the path to look for the label configuration in. Default: labels.json
+  -l, --labels <path>         the path or URL to look for the label configuration in. Default: labels.json
   -d, --dry-run               calculate the required label changes but do not apply them
   -A, --allow-added-labels    allow additional labels in the repo, and don't delete them
 ```

@@ -18,7 +18,7 @@ program
 	)
 	.option(
 		'-l, --labels <path>',
-		'the path to look for the label configuration in. Default: labels.json',
+		'the path or URL to look for the label configuration in. Default: labels.json',
 		'labels.json'
 	)
 	.option(
@@ -36,18 +36,29 @@ if (program.args.length !== 1) {
 	program.help();
 }
 
-// Resolve the label configuration path
-if (!/^[\/\~]/.test(program.labels)) {
-	program.labels = path.resolve(process.cwd(), program.labels);
-}
+function readLabels() {
+	if (program.labels.indexOf('http://') === 0 || program.labels.indexOf('https://') === 0) {
+		const got = require('got');
 
-// Load the labels
-let labels = [];
-try {
-	labels = require(program.labels);
-} catch (error) {
-	console.error(chalk.red(`No labels were found in ${program.labels}`));
-	process.exit(1);
+		return got(program.labels, { json: true }).then((response) => response.body).catch(() => {
+			console.error(chalk.red(`Downloading labels from ${program.labels} failed`));
+			process.exit(1);
+		});
+
+	} else {
+		// Resolve the label configuration path
+		if (!/^[\/\~]/.test(program.labels)) {
+			program.labels = path.resolve(process.cwd(), program.labels);
+		}
+
+		// Load the labels
+		try {
+			return Promise.resolve(require(program.labels));
+		} catch (error) {
+			console.error(chalk.red(`No labels were found in ${program.labels}`));
+			process.exit(1);
+		}
+	}
 }
 
 // Apply some log formatting
@@ -64,19 +75,25 @@ const format = {
 };
 
 // Pull together all the options
-const options = {
-	accessToken: program.accessToken,
-	allowAddedLabels: program.allowAddedLabels,
-	dryRun: program.dryRun,
-	format: format,
-	labels: labels,
-	log: console,
-	repo: program.args[0]
-};
+function resolveOptions() {
+	return readLabels().then((labels) => {
+		return {
+			accessToken: program.accessToken,
+			allowAddedLabels: program.allowAddedLabels,
+			dryRun: program.dryRun,
+			format: format,
+			labels: labels,
+			log: console,
+			repo: program.args[0]
+		};
+	});
+}
 
 // Sync the labels!
-console.log(chalk.cyan.underline(`Syncing labels for "${options.repo}"`));
-githubLabelSync(options).catch((error) => {
+resolveOptions().then((options) => {
+	console.log(chalk.cyan.underline(`Syncing labels for "${options.repo}"`));
+	return githubLabelSync(options);
+}).catch((error) => {
 	if (error.endpoint) {
 		console.log(chalk.red(`GitHub Error:\n${error.method} ${error.endpoint}\n${error.statusCode}: ${error.message}`));
 	} else {

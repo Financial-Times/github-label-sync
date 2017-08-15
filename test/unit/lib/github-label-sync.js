@@ -284,7 +284,7 @@ describe('lib/github-label-sync', () => {
 				});
 
 				it('should not execute any diff promises', () => {
-					assert.notCalled(Promise.all, labelDiffActions);
+					assert.neverCalledWith(Promise.all, labelDiffActions);
 				});
 
 			});

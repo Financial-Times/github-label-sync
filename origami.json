@@ -1,0 +1,12 @@
+{
+	"description": "Synchronise your GitHub labels with as few destructive operations as possible",
+	"origamiType": null,
+	"origamiVersion": 1,
+	"keywords": [],
+	"support": "https://github.com/Financial-Times/github-label-sync/issues",
+	"supportStatus": "active",
+	"supportContact": {
+		"email": "origami.support@ft.com",
+		"slack": "financialtimes/ft-origami"
+	}
+}

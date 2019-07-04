@@ -1,6 +1,5 @@
 {
   "name": "github-label-sync",
-  "version": "1.3.0",
   "description": "Synchronise your GitHub labels with as few destructive operations as possible",
   "repository": {
     "type": "git",

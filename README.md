@@ -161,7 +161,8 @@ The labels to sync with are defined as an array in either JavaScript or JSON. Th
 {
 	"name": "mylabel",
 	"color": "ff0000",
-	"aliases": []
+	"aliases": [],
+	"description": "optional description"
 }
 ```
 

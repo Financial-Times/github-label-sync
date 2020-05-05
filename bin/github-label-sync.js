@@ -19,7 +19,8 @@ program
 	.option(
 		'-l, --labels <path>',
 		'the path or URL to look for the label configuration in. Default: labels.json',
-		'labels.json'
+		getLabelFiles,
+		[ ]
 	)
 	.option(
 		'-d, --dry-run',
@@ -41,29 +42,44 @@ if (program.args.length !== 1) {
 	program.help();
 }
 
+function getLabelFiles(value, previous) {
+	return previous.concat([value]);
+}
+
 function readLabels() {
-	if (program.labels.indexOf('http://') === 0 || program.labels.indexOf('https://') === 0) {
-		const got = require('got');
-
-		return got(program.labels, { json: true }).then((response) => response.body).catch(() => {
-			console.error(chalk.red(`Downloading labels from ${program.labels} failed`));
-			process.exit(1);
-		});
-
-	} else {
-		// Resolve the label configuration path
-		if (!/^[\/\~]/.test(program.labels)) {
-			program.labels = path.resolve(process.cwd(), program.labels);
-		}
-
-		// Load the labels
-		try {
-			return Promise.resolve(require(program.labels));
-		} catch (error) {
-			console.error(chalk.red(`No labels were found in ${program.labels}`));
-			process.exit(1);
-		}
+	if (program.labels.length === 0) {
+		program.labels = [ 'labels.json' ];
 	}
+
+	const files = [];
+
+	program.labels.forEach((file) => {
+		if (file.indexOf('http://') === 0 || file.indexOf('https://') === 0) {
+			const got = require('got');
+
+			files.push(got(file, { json: true }).then((response) => response.body).catch(() => {
+				console.error(chalk.red(`Downloading labels from ${file} failed`));
+				process.exit(1);
+			}));
+
+		} else {
+			// Resolve the label configuration path
+			if (!/^[\/\~]/.test(file)) {
+				file = path.resolve(process.cwd(), file);
+			}
+
+			// Load the labels
+			try {
+				files.push(Promise.resolve(require(file)));
+			} catch (error) {
+				console.error(chalk.red(`No labels were found in ${file}`));
+				process.exit(1);
+			}
+		}
+
+	});
+
+	return Promise.all(files);
 }
 
 // Apply some log formatting
@@ -79,16 +95,45 @@ const format = {
 	}
 };
 
+// Merge our lists together
+function merge(files) {
+	const data = {};
+	const labels = [];
+
+	files.forEach((file) => {
+		if (!Array.isArray(file)) {
+			return;
+		}
+
+		file.forEach((label) => {
+			if (data[label.name] !== null && data[label.name] !== '') {
+				data[label.name] = label;
+			} else {
+				if (JSON.stringify(data[label.name]) !== JSON.stringify(label)) {
+					console.error(chalk.red(`Conflicting label names were found: ${label.name}`));
+					process.exit(1);
+				}
+			}
+		});
+	});
+
+	Object.keys(data).forEach((key) => {
+		labels.push(data[key]);
+	});
+
+	return labels;
+}
+
 // Pull together all the options
 function resolveOptions() {
-	return readLabels().then((labels) => {
+	return readLabels().then((files) => {
 		return {
 			accessToken: program.accessToken,
 			allowAddedLabels: program.allowAddedLabels,
 			dryRun: program.dryRun,
 			endpoint: program.endpoint,
 			format: format,
-			labels: labels,
+			labels: merge(files),
 			log: console,
 			repo: program.args[0]
 		};

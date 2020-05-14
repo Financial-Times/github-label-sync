@@ -1,7 +1,0 @@
-{
-	"checkPolicies": true,
-	"projectName": "github-label-sync",
-	"productName": "origami services and node modules",
-	"devDep": false,
-	"failOnError": true
-}

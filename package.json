@@ -11,7 +11,7 @@
   "main": "lib/github-label-sync.js",
   "bin": "bin/github-label-sync.js",
   "dependencies": {
-    "@financial-times/origami-service-makefile": "^6.0.1",
+    "@financial-times/origami-service-makefile": "^7.0.3",
     "chalk": "^4",
     "commander": "^2",
     "got": "^7.1.0",

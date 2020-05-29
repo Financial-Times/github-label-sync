@@ -23,7 +23,7 @@
     "eslint": "^5.9.0",
     "istanbul": "~0.4",
     "mocha": "^5.2.0",
-    "mockery": "^1",
+    "mockery": "^2",
     "proclaim": "^3",
     "sinon": "^1",
     "sinon-as-promised": "^4"

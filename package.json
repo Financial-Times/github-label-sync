@@ -29,7 +29,7 @@
     "sinon-as-promised": "^4"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=12"
   },
   "scripts": {
     "test": "npm run lint && npm run test-coverage",

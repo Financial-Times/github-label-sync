@@ -18,7 +18,7 @@ Table Of Contents
 Requirements
 ------------
 
-You'll need [Node.js][node] 4+ installed to run GitHub Label Sync. You'll also need a GitHub access token ready so that the the tool will have access to your repositories. You can [generate an access token here][access-tokens], be sure to allow the "repo" scope.
+You'll need [Node.js][node] 12+ installed to run GitHub Label Sync. You'll also need a GitHub access token ready so that the the tool will have access to your repositories. You can [generate an access token here][access-tokens], be sure to allow the "repo" scope.
 
 
 Command-Line Interface

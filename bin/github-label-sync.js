@@ -61,7 +61,11 @@ function readLabels() {
 		if (file.indexOf('http://') === 0 || file.indexOf('https://') === 0) {
 			const got = require('got');
 
-			const options = { json: !isYaml };
+			const options = {};
+			if (!isYaml) {
+				options.json = true;
+			}
+
 			files.push(got(file, options)
 				.then((response) => {
 					return isYaml ? yaml.safeLoad(response.body): response.body;

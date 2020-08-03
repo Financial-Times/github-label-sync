@@ -22,7 +22,7 @@
   "devDependencies": {
     "eslint": "^7.6.0",
     "istanbul": "~0.4",
-    "mocha": "^8.0.1",
+    "mocha": "^8.1.0",
     "mockery": "^2",
     "proclaim": "^3",
     "sinon": "^1",

@@ -1,5 +1,5 @@
 
-# GitHub Label Sync [![NPM version](https://img.shields.io/npm/v/github-label-sync.svg)](https://www.npmjs.com/package/github-label-sync) [![Build status](https://img.shields.io/circleci/project/Financial-Times/github-label-sync.svg)](https://circleci.com/gh/Financial-Times/github-label-sync) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)][license]
+# GitHub Label Sync [![NPM version](https://img.shields.io/npm/v/github-label-sync.svg)](https://www.npmjs.com/package/github-label-sync) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)][license]
 
 Synchronise your GitHub labels with as few destructive operations as possible – similar labels get renamed.
 

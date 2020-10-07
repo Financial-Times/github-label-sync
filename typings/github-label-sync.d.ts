@@ -19,6 +19,12 @@ export interface Options {
   repo: string
 }
 
+export interface DefaultOptions extends Options {
+  accessToken: null
+  endpoint: null
+  repo: null
+}
+
 export interface LabelDiff {
   name: string
   type: string
@@ -26,6 +32,6 @@ export interface LabelDiff {
   expected?: BasicLabel
 }
 
-export const deafults: Required<Options>
+export const defaults: Required<DefaultOptions>
 
 export default function githubLabelSync(options: Options): Promise<LabelDiff[]>

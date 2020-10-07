@@ -10,6 +10,7 @@
   "license": "MIT",
   "main": "lib/github-label-sync.js",
   "bin": "bin/github-label-sync.js",
+  "types": "typings/github-label-sync.d.ts",
   "dependencies": {
     "@financial-times/origami-service-makefile": "^7.0.3",
     "chalk": "^4",

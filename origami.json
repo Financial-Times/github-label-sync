@@ -1,6 +1,6 @@
 {
 	"description": "Synchronise your GitHub labels with as few destructive operations as possible",
-	"origamiType": null,
+	"origamiType": "cli",
 	"origamiVersion": 1,
 	"keywords": [],
 	"support": "https://github.com/Financial-Times/github-label-sync/issues",

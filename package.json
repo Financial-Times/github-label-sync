@@ -17,7 +17,7 @@
     "got": "^11.5.2",
     "js-yaml": "^3.14.0",
     "node.extend": "^2.0.2",
-    "octonode": "^0.9.5"
+    "octonode": "^0.10.2"
   },
   "devDependencies": {
     "eslint": "^7.24.0",

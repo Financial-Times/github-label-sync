@@ -14,7 +14,7 @@
     "@financial-times/origami-service-makefile": "^7.0.3",
     "chalk": "^4",
     "commander": "^6.2.1",
-    "got": "^11.5.2",
+    "got": "^11.8.2",
     "js-yaml": "^3.14.1",
     "node.extend": "^2.0.2",
     "octonode": "^0.9.5"

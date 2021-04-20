@@ -13,7 +13,7 @@
   "dependencies": {
     "@financial-times/origami-service-makefile": "^7.0.3",
     "chalk": "^4",
-    "commander": "^6",
+    "commander": "^6.2.1",
     "got": "^11.5.2",
     "js-yaml": "^3.14.0",
     "node.extend": "^2.0.2",

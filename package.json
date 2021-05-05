@@ -20,7 +20,7 @@
     "octonode": "^0.10.2"
   },
   "devDependencies": {
-    "eslint": "^7.24.0",
+    "eslint": "^7.25.0",
     "istanbul": "~0.4",
     "mocha": "^8.3.2",
     "mockery": "^2",

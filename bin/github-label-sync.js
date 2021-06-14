@@ -137,8 +137,14 @@ function merge(files) {
 		});
 	});
 
+	// Make sure leading `#` are stripped from the color property.
 	Object.keys(data).forEach((key) => {
-		labels.push(data[key]);
+		const label = data[key]; 
+		const color = String(label.color);
+		if (color.startsWith('#')) {
+			label.color = color.replace('#', '');
+		}
+		labels.push(label);
 	});
 
 	return labels;

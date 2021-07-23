@@ -272,7 +272,7 @@ describe('lib/github-label-api', () => {
 
 				it('should make a PATCH request to the repo labels endpoint (encoding `labelName`)', () => {
 					assert.calledOnce(instance.apiClient.patch);
-					assert.calledWith(instance.apiClient.patch, `/repos/${repo}/labels/baz%20qux`, label);
+					assert.calledWith(instance.apiClient.patch, `/repos/${repo}/labels/baz%20qux`, {new_name: 'foo', color: 'ff0000'});
 				});
 
 				describe('.then()', () => {

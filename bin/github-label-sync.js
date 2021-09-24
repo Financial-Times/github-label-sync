@@ -11,7 +11,7 @@ const yaml = require('js-yaml');
 
 // Command-line configuration
 program
-	.version(pkg.version)
+	.version(pkg.version || 'unknown')
 	.usage('[options] <repository>')
 	.option(
 		'-a, --access-token <token>',

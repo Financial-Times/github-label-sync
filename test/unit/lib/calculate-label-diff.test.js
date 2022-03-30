@@ -321,6 +321,93 @@ describe('lib/calculate-label-diff', () => {
 
 		});
 
+		describe('when a configured label alias exists in the current labels, and the configured label exists in the current labels', () => {
+
+			beforeEach(() => {
+				currentLabels = [
+					{
+						name: 'bar',
+						color: '00ff00'
+					},
+					{
+						name: 'foo',
+						color: 'ff0000'
+					}
+				];
+				configuredLabels = [
+					{
+						name: 'foo',
+						color: '0000ff',
+						aliases: [
+							'bar'
+						]
+					}
+				];
+				diff = calculateLabelDiff(currentLabels, configuredLabels);
+			});
+
+			it('should only add a "changed" entry for the first match to the returned diff', () => {
+				assert.lengthEquals(diff, 1);
+				assert.deepEqual(diff[0], {
+					name: 'bar',
+					type: 'changed',
+					actual: {
+						name: 'bar',
+						color: '00ff00'
+					},
+					expected: {
+						name: 'foo',
+						color: '0000ff'
+					}
+				});
+			});
+
+		});
+
+		describe('when multiple aliases of a configured label exist in the current labels', () => {
+
+			beforeEach(() => {
+				currentLabels = [
+					{
+						name: 'bar',
+						color: '00ff00'
+					},
+					{
+						name: 'foo',
+						color: 'ff0000'
+					}
+				];
+				configuredLabels = [
+					{
+						name: 'baz',
+						color: '0000ff',
+						aliases: [
+							'foo',
+							'bar'
+						]
+					}
+				];
+				diff = calculateLabelDiff(currentLabels, configuredLabels);
+			});
+
+			it('should only add a "changed" entry for the first match to the returned diff', () => {
+				assert.lengthEquals(diff, 1);
+				assert.deepEqual(diff[0], {
+					name: 'bar',
+					type: 'changed',
+					actual: {
+						name: 'bar',
+						color: '00ff00'
+					},
+					expected: {
+						name: 'baz',
+						color: '0000ff'
+					}
+				});
+			});
+
+		});
+
 		describe('when a current label does not exist in the configured labels', () => {
 
 			beforeEach(() => {

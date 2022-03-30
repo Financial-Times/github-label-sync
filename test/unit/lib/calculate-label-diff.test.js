@@ -321,7 +321,7 @@ describe('lib/calculate-label-diff', () => {
 
 		});
 
-		describe('when a configured label alias exists in the current labels, and the configured label exists in the current labels', () => {
+		describe('when a configured label exists in the current labels but has changes, and the configured label\'s alias exists in the current labels', () => {
 
 			beforeEach(() => {
 				currentLabels = [
@@ -346,20 +346,34 @@ describe('lib/calculate-label-diff', () => {
 				diff = calculateLabelDiff(currentLabels, configuredLabels);
 			});
 
-			it('should only add a "changed" entry for the first match to the returned diff', () => {
-				assert.lengthEquals(diff, 1);
-				assert.deepEqual(diff[0], {
-					name: 'bar',
-					type: 'changed',
-					actual: {
-						name: 'bar',
-						color: '00ff00'
-					},
-					expected: {
+			it('should add a "changed" entry for the configured label and a "merge" entry for the alias to the returned diff', () => {
+				assert.lengthEquals(diff, 2);
+				assert.deepEqual(diff, [
+					{
 						name: 'foo',
-						color: '0000ff'
+						type: 'changed',
+						actual: {
+							name: 'foo',
+							color: 'ff0000'
+						},
+						expected: {
+							name: 'foo',
+							color: '0000ff'
+						}
+					},
+					{
+						name: 'bar',
+						type: 'merge',
+						actual: {
+							name: 'bar',
+							color: '00ff00'
+						},
+						expected: {
+							name: 'foo',
+							color: '0000ff'
+						},
 					}
-				});
+				]);
 			});
 
 		});
@@ -390,20 +404,34 @@ describe('lib/calculate-label-diff', () => {
 				diff = calculateLabelDiff(currentLabels, configuredLabels);
 			});
 
-			it('should only add a "changed" entry for the first match to the returned diff', () => {
-				assert.lengthEquals(diff, 1);
-				assert.deepEqual(diff[0], {
-					name: 'bar',
-					type: 'changed',
-					actual: {
+			it('should add a "changed" entry for one alias and a "merge" entry for the other alias to the returned diff', () => {
+				assert.lengthEquals(diff, 2);
+				assert.deepEqual(diff, [
+					{
 						name: 'bar',
-						color: '00ff00'
+						type: 'changed',
+						actual: {
+							name: 'bar',
+							color: '00ff00'
+						},
+						expected: {
+							name: 'baz',
+							color: '0000ff'
+						}
 					},
-					expected: {
-						name: 'baz',
-						color: '0000ff'
+					{
+						name: 'foo',
+						type: 'merge',
+						actual: {
+							name: 'foo',
+							color: 'ff0000'
+						},
+						expected: {
+							name: 'baz',
+							color: '0000ff'
+						}
 					}
-				});
+				]);
 			});
 
 		});

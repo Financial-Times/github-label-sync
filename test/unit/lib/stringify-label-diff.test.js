@@ -58,6 +58,24 @@ describe('lib/stringify-label-diff', () => {
 			assert.strictEqual(stringifiedDiff[0], 'Changed: the "foo" label in the repo is out of date. It will be updated to "bar" with color "#00ff00".');
 		});
 
+		it('should stringify "merge" diff entries', () => {
+			labelDiff.push({
+				name: 'foo',
+				type: 'merge',
+				actual: {
+					name: 'foo',
+					color: 'ff0000'
+				},
+				expected: {
+					name: 'bar',
+					color: '00ff00'
+				}
+			});
+			stringifiedDiff = stringifyLabelDiff(labelDiff);
+			assert.lengthEquals(stringifiedDiff, 1);
+			assert.strictEqual(stringifiedDiff[0], 'Changed: the "foo" label in the repo is out of date. It will be updated to "bar" with color "#00ff00".');
+		});
+
 		it('should stringify "added" diff entries', () => {
 			labelDiff.push({
 				name: 'foo',

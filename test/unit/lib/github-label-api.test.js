@@ -350,6 +350,204 @@ describe('lib/github-label-api', () => {
 
 			});
 
+			it('should have a `getLabeledIssues` method', () => {
+				assert.isFunction(instance.getLabeledIssues);
+			});
+
+			describe('.getLabeledIssues(repo, labelName)', () => {
+				const issues = ['foo', 'bar', 'baz'];
+				const repo = 'foo/bar';
+				const labelName = 'baz qux';
+				let returnedPromise;
+
+				beforeEach(() => {
+					instance.apiClient.get.yieldsAsync(null, 200, issues);
+					returnedPromise = instance.getLabeledIssues(repo, labelName);
+				});
+
+				it('should return a promise', () => {
+					assert.instanceOf(returnedPromise, Promise);
+				});
+
+				it('should make a GET request to the repo issues endpoint', () => {
+					assert.calledOnce(instance.apiClient.get);
+					assert.calledWith(instance.apiClient.get, `/repos/${repo}/issues`, {labels: labelName, page: 1, per_page: 100, state: 'all'});
+				});
+
+				describe('.then()', () => {
+					let resolvedValue;
+
+					beforeEach((done) => {
+						returnedPromise.then((value) => {
+							resolvedValue = value;
+							done();
+						}).catch(done);
+					});
+
+					it('should resolve with the repo issues', () => {
+						assert.deepEqual(resolvedValue, issues);
+					});
+
+				});
+
+				describe('when the API client errors', () => {
+					const apiClientError = new Error('API client error');
+
+					beforeEach(() => {
+						instance.apiClient.get.yieldsAsync(apiClientError);
+						returnedPromise = instance.getLabeledIssues(repo, labelName);
+					});
+
+					describe('.catch()', () => {
+						let caughtError;
+
+						beforeEach((done) => {
+							returnedPromise.then(done).catch((error) => {
+								caughtError = error;
+								done();
+							});
+						});
+
+						it('should fail with the API client error', () => {
+							assert.strictEqual(caughtError, apiClientError);
+						});
+
+						it('should augment the API client error with request information', () => {
+							assert.strictEqual(caughtError.method, 'GET');
+							assert.strictEqual(caughtError.endpoint, `/repos/${repo}/issues`);
+						});
+
+					});
+
+				});
+
+				describe('when the API response with a non-200 status', () => {
+
+					beforeEach(() => {
+						instance.apiClient.get.yieldsAsync(null, 404);
+						returnedPromise = instance.getLabeledIssues(repo, labelName);
+					});
+
+					describe('.catch()', () => {
+						let caughtError;
+
+						beforeEach((done) => {
+							returnedPromise.then(done).catch((error) => {
+								caughtError = error;
+								done();
+							});
+						});
+
+						it('should fail with a status error', () => {
+							assert.instanceOf(caughtError, Error);
+							assert.strictEqual(caughtError.message, 'API responded with 404 status');
+						});
+
+					});
+
+				});
+
+			});
+
+			it('should have a `labelIssue` method', () => {
+				assert.isFunction(instance.labelIssue);
+			});
+
+			describe('.labelIssue(repo, issueNumber, labelName)', () => {
+				const issueNumber = '42';
+				const labelName = 'baz qux';
+				const repo = 'foo/bar';
+				let returnedPromise;
+
+				beforeEach(() => {
+					instance.apiClient.post.yieldsAsync(null, 200);
+					returnedPromise = instance.labelIssue(repo, issueNumber, labelName);
+				});
+
+				it('should return a promise', () => {
+					assert.instanceOf(returnedPromise, Promise);
+				});
+
+				it('should make a POST request to the repo issue labels endpoint (encoding `issueNumber`)', () => {
+					assert.calledOnce(instance.apiClient.post);
+					assert.calledWith(instance.apiClient.post, `/repos/${repo}/issues/${issueNumber}/labels`, {labels: [labelName]});
+				});
+
+				describe('.then()', () => {
+					let resolvedValue;
+
+					beforeEach((done) => {
+						returnedPromise.then((value) => {
+							resolvedValue = value;
+							done();
+						}).catch(done);
+					});
+
+					it('should resolve with no value', () => {
+						assert.isUndefined(resolvedValue);
+					});
+
+				});
+
+				describe('when the API client errors', () => {
+					const apiClientError = new Error('API client error');
+
+					beforeEach(() => {
+						instance.apiClient.post.yieldsAsync(apiClientError);
+						returnedPromise = instance.labelIssue(repo, issueNumber, labelName);
+					});
+
+					describe('.catch()', () => {
+						let caughtError;
+
+						beforeEach((done) => {
+							returnedPromise.then(done).catch((error) => {
+								caughtError = error;
+								done();
+							});
+						});
+
+						it('should fail with the API client error', () => {
+							assert.strictEqual(caughtError, apiClientError);
+						});
+
+						it('should augment the API client error with request information', () => {
+							assert.strictEqual(caughtError.method, 'POST');
+							assert.strictEqual(caughtError.endpoint, `/repos/${repo}/issues/${issueNumber}/labels`);
+						});
+
+					});
+
+				});
+
+				describe('when the API response with a non-200 status', () => {
+
+					beforeEach(() => {
+						instance.apiClient.post.yieldsAsync(null, 422);
+						returnedPromise = instance.labelIssue(repo, issueNumber, labelName);
+					});
+
+					describe('.catch()', () => {
+						let caughtError;
+
+						beforeEach((done) => {
+							returnedPromise.then(done).catch((error) => {
+								caughtError = error;
+								done();
+							});
+						});
+
+						it('should fail with a status error', () => {
+							assert.instanceOf(caughtError, Error);
+							assert.strictEqual(caughtError.message, 'API responded with 422 status');
+						});
+
+					});
+
+				});
+
+			});
+
 			it('should have a `deleteLabel` method', () => {
 				assert.isFunction(instance.deleteLabel);
 			});

@@ -77,6 +77,121 @@ describe('lib/action-label-diff', () => {
 			assert.strictEqual(actions[0], updatePromise);
 		});
 
+		it('should convert "merge" diff entries to label API delete promises', () => {
+			const issues = [
+				{
+					number: 11,
+					labels: [
+						{
+							name: 'bar'
+						}
+					]
+				},
+				{
+					number: 42,
+					labels: [
+						{
+							name: 'bar'
+						},
+						{
+							name: 'baz'
+						}
+					]
+				}
+			];
+			apiClient.getLabeledIssues.returns(Promise.resolve(issues));
+			apiClient.labelIssue.returns(Promise.resolve());
+			const deletePromiseValue = 'asdf';
+			apiClient.deleteLabel.returns(Promise.resolve(deletePromiseValue));
+			options.diff.push({
+				name: 'foo',
+				type: 'merge',
+				actual: {
+					name: 'bar',
+					color: 'ff0000',
+					description: 'baz'
+				},
+				expected: {
+					name: 'foo',
+					color: '00ff00',
+					description: 'baz'
+				}
+			});
+			actions = actionLabelDiff(options);
+			assert.lengthEquals(actions, 1);
+			return actions[0]
+				.then((value) => {
+					assert.calledOnce(apiClient.getLabeledIssues);
+					assert.calledWithExactly(apiClient.getLabeledIssues, options.repo, options.diff[0].name);
+					assert.calledTwice(apiClient.labelIssue);
+					assert.calledWithExactly(apiClient.labelIssue.getCall(0), options.repo, issues[0].number, options.diff[0].expected.name);
+					assert.calledWithExactly(apiClient.labelIssue.getCall(1), options.repo, issues[1].number, options.diff[0].expected.name);
+					assert.calledOnce(apiClient.deleteLabel);
+					assert.calledWithExactly(apiClient.deleteLabel, options.repo, options.diff[0].name);
+					assert.strictEqual(value, deletePromiseValue);
+				});
+		});
+
+		it('should not attempt redundant issue labeling for "merge" diff entries', () => {
+			const issues = [
+				{
+					number: 11,
+					labels: [
+						{
+							name: 'bar'
+						}
+					]
+				},
+				{
+					number: 42,
+					labels: [
+						{
+							name: 'bar'
+						},
+						{
+							name: 'foo'
+						}
+					]
+				},
+				{
+					number: 123,
+					labels: [
+						{
+							name: 'bar'
+						},
+						{
+							name: 'baz'
+						}
+					]
+				}
+			];
+			apiClient.getLabeledIssues.returns(Promise.resolve(issues));
+			apiClient.labelIssue.returns(Promise.resolve());
+			apiClient.deleteLabel.returns(Promise.resolve());
+			options.diff.push({
+				name: 'foo',
+				type: 'merge',
+				actual: {
+					name: 'bar',
+					color: 'ff0000',
+					description: 'baz'
+				},
+				expected: {
+					name: 'foo',
+					color: '00ff00',
+					description: 'baz'
+				}
+			});
+			actions = actionLabelDiff(options);
+			assert.lengthEquals(actions, 1);
+			return actions[0]
+				.then(() => {
+					assert.calledTwice(apiClient.labelIssue);
+					assert.calledWithExactly(apiClient.labelIssue.getCall(0), options.repo, issues[0].number, options.diff[0].expected.name);
+					assert.calledWithExactly(apiClient.labelIssue.getCall(1), options.repo, issues[2].number, options.diff[0].expected.name);
+				});
+		});
+
 		it('should convert "added" diff entries to label API delete promises', () => {
 			const deletePromise = Promise.resolve();
 			apiClient.deleteLabel.returns(deletePromise);

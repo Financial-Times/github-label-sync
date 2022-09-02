@@ -181,7 +181,8 @@ As YAML:
   description: optional description
 ```
 
-The `name` property refers to the label name and the `color` property should be set to the color of the label as a hex code, both with or without the leading `#` are valid.
+- The `name` property refers to the label name.
+- The `color` property should be a hex code, with or without the leading `#`.
 
 The `aliases` property is optional. When GitHub Label Sync is determining whether to update or delete/create a label it will use the aliases property to prevent used labels from being deleted.
 

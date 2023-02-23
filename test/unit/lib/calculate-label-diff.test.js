@@ -168,25 +168,39 @@ describe('lib/calculate-label-diff', () => {
 					{
 						name: 'foo',
 						color: 'ff0000',
+					},
+					{
+						name: 'bar',
+						color: '00ff00',
 					}
 				];
 				configuredLabels = [
 					{
 						name: 'foo',
-						delete: true
+						delete: true,
+						aliases: ['bar']
 					}
 				];
 				diff = calculateLabelDiff(currentLabels, configuredLabels);
 			});
 
-			it('should add an "added" entry to the returned diff', () => {
-				assert.lengthEquals(diff, 1);
+			it('should add an "added" entry to the returned diff for each match', () => {
+				assert.lengthEquals(diff, 2);
 				assert.deepEqual(diff[0], {
 					name: 'foo',
 					type: 'added',
 					actual: {
 						name: 'foo',
 						color: 'ff0000',
+					},
+					expected: null
+				});
+				assert.deepEqual(diff[1], {
+					name: 'bar',
+					type: 'added',
+					actual: {
+						name: 'bar',
+						color: '00ff00',
 					},
 					expected: null
 				});

@@ -16,6 +16,7 @@ describe('lib/calculate-label-diff', () => {
 	describe('calculateLabelDiff(currentLabels, configuredLabels)', () => {
 		let configuredLabels;
 		let currentLabels;
+		let allowAddedLabels;
 		let diff;
 
 		it('should return an array', function() {
@@ -47,7 +48,25 @@ describe('lib/calculate-label-diff', () => {
 					}
 				});
 			});
+		});
 
+		describe('when a configured label set to delete does not exist in the current labels', () => {
+
+			beforeEach(() => {
+				currentLabels = [];
+				configuredLabels = [
+					{
+						name: 'bar',
+						color: '00ff00',
+						delete: true
+					}
+				];
+				diff = calculateLabelDiff(currentLabels, configuredLabels);
+			});
+
+			it('should not add a "missing" entry to the returned diff', () => {
+				assert.lengthEquals(diff, 0);
+			});
 		});
 
 		describe('when a configured label with description does not exist in the current labels', () => {
@@ -137,6 +156,39 @@ describe('lib/calculate-label-diff', () => {
 						name: 'foo',
 						color: '00ff00'
 					}
+				});
+			});
+
+		});
+
+		describe('when a configured label exists in the current labels and is marked for deletion', () => {
+
+			beforeEach(() => {
+				currentLabels = [
+					{
+						name: 'foo',
+						color: 'ff0000',
+					}
+				];
+				configuredLabels = [
+					{
+						name: 'foo',
+						delete: true
+					}
+				];
+				diff = calculateLabelDiff(currentLabels, configuredLabels);
+			});
+
+			it('should add an "added" entry to the returned diff', () => {
+				assert.lengthEquals(diff, 1);
+				assert.deepEqual(diff[0], {
+					name: 'foo',
+					type: 'added',
+					actual: {
+						name: 'foo',
+						color: 'ff0000',
+					},
+					expected: null
 				});
 			});
 
@@ -436,62 +488,158 @@ describe('lib/calculate-label-diff', () => {
 
 		});
 
-		describe('when a current label does not exist in the configured labels', () => {
-
+		describe('when allowAddedLabels is false', () => {
 			beforeEach(() => {
-				currentLabels = [
-					{
-						name: 'foo',
-						color: 'ff0000'
-					}
-				];
-				configuredLabels = [];
-				diff = calculateLabelDiff(currentLabels, configuredLabels);
+				allowAddedLabels = false;
 			});
 
-			it('should add an "added" entry to the returned diff', () => {
-				assert.lengthEquals(diff, 1);
-				assert.deepEqual(diff[0], {
-					name: 'foo',
-					type: 'added',
-					actual: {
-						name: 'foo',
-						color: 'ff0000'
-					},
-					expected: null
+			describe('when a current label does not exist in the configured labels', () => {
+
+				beforeEach(() => {
+					currentLabels = [
+						{
+							name: 'foo',
+							color: 'ff0000'
+						}
+					];
+					configuredLabels = [];
+					diff = calculateLabelDiff(currentLabels, configuredLabels, allowAddedLabels);
 				});
+	
+				it('should add an "added" entry to the returned diff', () => {
+					assert.lengthEquals(diff, 1);
+					assert.deepEqual(diff[0], {
+						name: 'foo',
+						type: 'added',
+						actual: {
+							name: 'foo',
+							color: 'ff0000'
+						},
+						expected: null
+					});
+				});
+	
 			});
-
+	
+			describe('when a current label with description does not exist in the configured labels', () => {
+	
+				beforeEach(() => {
+					currentLabels = [
+						{
+							name: 'foo',
+							color: 'ff0000',
+							description: 'bar'
+						}
+					];
+					configuredLabels = [];
+					diff = calculateLabelDiff(currentLabels, configuredLabels, allowAddedLabels);
+				});
+	
+				it('should add an "added" entry to the returned diff', () => {
+					assert.lengthEquals(diff, 1);
+					assert.deepEqual(diff[0], {
+						name: 'foo',
+						type: 'added',
+						actual: {
+							name: 'foo',
+							color: 'ff0000',
+							description: 'bar'
+						},
+						expected: null
+					});
+				});
+	
+			});
 		});
 
-		describe('when a current label with description does not exist in the configured labels', () => {
-
+		describe('when allowAddedLabels is true', () => {
 			beforeEach(() => {
-				currentLabels = [
-					{
-						name: 'foo',
-						color: 'ff0000',
-						description: 'bar'
-					}
-				];
-				configuredLabels = [];
-				diff = calculateLabelDiff(currentLabels, configuredLabels);
+				allowAddedLabels = true;
 			});
 
-			it('should add an "added" entry to the returned diff', () => {
-				assert.lengthEquals(diff, 1);
-				assert.deepEqual(diff[0], {
-					name: 'foo',
-					type: 'added',
-					actual: {
-						name: 'foo',
-						color: 'ff0000',
-						description: 'bar'
-					},
-					expected: null
+			describe('when a current label does not exist in the configured labels', () => {
+				beforeEach(() => {
+					currentLabels = [
+						{
+							name: 'foo',
+							color: 'ff0000'
+						}
+					];
+					configuredLabels = [];
+					diff = calculateLabelDiff(currentLabels, configuredLabels, allowAddedLabels);
+				});
+	
+				it('should not add an "added" entry to the returned diff', () => {
+					assert.lengthEquals(diff, 0);
 				});
 			});
 
+			describe('when a current label is marked for deletion in the configured labels', () => {
+				beforeEach(() => {
+					currentLabels = [
+						{
+							name: 'foo',
+							color: 'ff0000',
+						}
+					];
+					configuredLabels = [
+						{
+							name: 'foo',
+							delete: true,
+						}
+					];
+					diff = calculateLabelDiff(currentLabels, configuredLabels, allowAddedLabels);
+				});
+	
+				it('should add an "added" entry to the returned diff', () => {
+					assert.lengthEquals(diff, 1);
+					assert.deepEqual(diff[0], {
+						name: 'foo',
+						type: 'added',
+						actual: {
+							name: 'foo',
+							color: 'ff0000'
+						},
+						expected: null
+					});
+				});
+			});
+
+			describe('when a current label with description is marked for deletion in the configured labels', () => {
+	
+				beforeEach(() => {
+					currentLabels = [
+						{
+							name: 'foo',
+							color: 'ff0000',
+							description: 'bar',
+							delete: true
+						}
+					];
+					configuredLabels = [
+						{
+							name: 'foo',
+							delete: true,
+						}
+					];
+					diff = calculateLabelDiff(currentLabels, configuredLabels, allowAddedLabels);
+				});
+	
+				it('should add an "added" entry to the returned diff', () => {
+					assert.lengthEquals(diff, 1);
+					assert.deepEqual(diff[0], {
+						name: 'foo',
+						type: 'added',
+						actual: {
+							name: 'foo',
+							color: 'ff0000',
+							description: 'bar'
+						},
+						expected: null
+					});
+				});
+	
+			});
 		});
 
 		describe('when a range of diffs are expected', () => {

@@ -168,7 +168,8 @@ As JSON:
 	"name": "mylabel",
 	"color": "ff0000",
 	"aliases": [],
-	"description": "optional description"
+	"description": "optional description",
+	"delete": false
 }
 ```
 
@@ -179,10 +180,12 @@ As YAML:
   color: "ff0000"
   aliases: []
   description: optional description
+  delete: false
 ```
 
 - The `name` property refers to the label name.
 - The `color` property should be a hex code, with or without the leading `#`.
+- The `delete` property is optional. When set to true, matches for this label will _always_ be deleted. This can be used in conjunction with [allowAddedLabels](#allowaddedlabels) to flag specific labels for deletion while leaving non-specified labels intact.
 
 The `aliases` property is optional. When GitHub Label Sync is determining whether to update or delete/create a label it will use the aliases property to prevent used labels from being deleted.
 

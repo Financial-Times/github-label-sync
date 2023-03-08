@@ -203,7 +203,7 @@ describe('lib/github-label-sync', () => {
 
 			it('should diff the labels returned from the API against `options.labels`', () => {
 				assert.calledOnce(calculateLabelDiff);
-				assert.calledWithExactly(calculateLabelDiff, labelsFromApi, options.labels);
+				assert.calledWithExactly(calculateLabelDiff, labelsFromApi, options.labels, false);
 			});
 
 			it('should stringify and log the returned diff', () => {
@@ -294,18 +294,8 @@ describe('lib/github-label-sync', () => {
 		describe('when the `allowAddedLabels` option is `true`', () => {
 
 			beforeEach(() => {
-				labelDiff.push({
-					name: 'bar',
-					type: 'added',
-					actual: {
-						name: 'bar',
-						color: '00ff00'
-					},
-					expected: null
-				});
 				options.allowAddedLabels = true;
-				actionLabelDiff.reset();
-				stringifyLabelDiff.reset();
+				calculateLabelDiff.reset();
 				returnedPromise = githubLabelSync(options);
 			});
 
@@ -316,16 +306,10 @@ describe('lib/github-label-sync', () => {
 						done();
 					}).catch(done);
 				});
-
-				it('should not include "added" diffs in stringification', () => {
-					assert.calledOnce(stringifyLabelDiff);
-					assert.deepEqual(stringifyLabelDiff.firstCall.args[0], [labelDiff[0]]);
-				});
-
-				it('should not convert "added" diffs to promises', () => {
-					assert.calledOnce(actionLabelDiff);
-					assert.isObject(actionLabelDiff.firstCall.args[0]);
-					assert.deepEqual(actionLabelDiff.firstCall.args[0].diff, [labelDiff[0]]);
+			
+				it('should call calculateLabelDiff with the `allowAddedLabels` flag set to true', () => {
+					assert.calledOnce(calculateLabelDiff);
+					assert.calledWithExactly(calculateLabelDiff, labelsFromApi, options.labels, true);
 				});
 
 			});

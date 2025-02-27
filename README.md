@@ -1,28 +1,22 @@
-
 # GitHub Label Sync [![NPM version](https://img.shields.io/npm/v/github-label-sync.svg)](https://www.npmjs.com/package/github-label-sync) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)][license]
 
 Synchronise your GitHub labels with as few destructive operations as possible – similar labels get renamed.
 
-Table Of Contents
------------------
+## Table Of Contents
 
-- [Requirements](#requirements)
-- [Command-Line Interface](#command-line-interface)
-- [JavaScript Interface](#javascript-interface)
-- [Label Config File](#label-config-file)
-- [Configuration](#configuration)
-- [Contributing](#contributing)
-- [License](#license)
+-   [Requirements](#requirements)
+-   [Command-Line Interface](#command-line-interface)
+-   [JavaScript Interface](#javascript-interface)
+-   [Label Config File](#label-config-file)
+-   [Configuration](#configuration)
+-   [Contributing](#contributing)
+-   [License](#license)
 
+## Requirements
 
-Requirements
-------------
+You'll need [Node.js][node] 20+ installed to run GitHub Label Sync. You'll also need a GitHub access token ready so that the tool will have access to your repositories. You can [generate an access token here][access-tokens], be sure to allow the "repo" scope.
 
-You'll need [Node.js][node] 12+ installed to run GitHub Label Sync. You'll also need a GitHub access token ready so that the tool will have access to your repositories. You can [generate an access token here][access-tokens], be sure to allow the "repo" scope.
-
-
-Command-Line Interface
-----------------------
+## Command-Line Interface
 
 Install GitHub Label Sync globally with [npm][npm]:
 
@@ -75,9 +69,7 @@ Normally any additional labels found on the repo are deleted. Run GitHub label s
 github-label-sync --access-token xxxxxx --allow-added-labels myname/myrepo
 ```
 
-
-JavaScript Interface
---------------------
+## JavaScript Interface
 
 Install GitHub Label Sync with [npm][npm] or add to your `package.json`:
 
@@ -97,13 +89,13 @@ Run GitHub Label Sync on a repo ([passing in options](#configuration)):
 
 ```js
 githubLabelSync({
-	accessToken: 'xxxxxx',
-	repo: 'myname/myrepo',
-	labels: [
-		// label config
-	]
+    accessToken: 'xxxxxx',
+    repo: 'myname/myrepo',
+    labels: [
+        // label config
+    ]
 }).then((diff) => {
-	console.log(diff);
+    console.log(diff);
 });
 ```
 
@@ -113,51 +105,49 @@ When the promise resolves successfully, its value will be set to a diff between 
 
 ```js
 [
-	// This is a "missing" diff, it indicates that a label
-	// present in your local config is not present on GitHub.
-	{
-		name: 'local-label-name',
-		type: 'missing',
-		actual: null,
-		expected: {
-			name: 'local-label-name',
-			color: 'ff0000'
-		}
-	},
-	// This is a "changed" diff, it indicates that a label
-	// present on GitHub has diverged from your local config.
-	// This could mean that either somebody has modified the
-	// label manually on GitHub, or the local config has
-	// been updated.
-	{
-		name: 'local-label-name',
-		type: 'changed',
-		actual: {
-			name: 'remote-label-name',
-			color: '00ff00'
-		},
-		expected: {
-			name: 'local-label-name',
-			color: 'ff0000'
-		}
-	},
-	// This is an "added" diff, it indicates that a label
-	// is present on GitHub but not in your local config.
-	{
-		name: 'remote-label-name',
-		type: 'added',
-		actual: {
-			name: 'remote-label-name',
-			color: 'ff0000'
-		},
-		expected: null
-	}
-]
+    // This is a "missing" diff, it indicates that a label
+    // present in your local config is not present on GitHub.
+    {
+        name: 'local-label-name',
+        type: 'missing',
+        actual: null,
+        expected: {
+            name: 'local-label-name',
+            color: 'ff0000'
+        }
+    },
+    // This is a "changed" diff, it indicates that a label
+    // present on GitHub has diverged from your local config.
+    // This could mean that either somebody has modified the
+    // label manually on GitHub, or the local config has
+    // been updated.
+    {
+        name: 'local-label-name',
+        type: 'changed',
+        actual: {
+            name: 'remote-label-name',
+            color: '00ff00'
+        },
+        expected: {
+            name: 'local-label-name',
+            color: 'ff0000'
+        }
+    },
+    // This is an "added" diff, it indicates that a label
+    // is present on GitHub but not in your local config.
+    {
+        name: 'remote-label-name',
+        type: 'added',
+        actual: {
+            name: 'remote-label-name',
+            color: 'ff0000'
+        },
+        expected: null
+    }
+];
 ```
 
-
-Label Config File
-----------
+## Label Config File
 
 The labels to sync with are defined as an array in either JavaScript, JSON or YAML. The array must contain only label objects, which look like this:
 
@@ -165,11 +155,11 @@ As JSON:
 
 ```json
 {
-	"name": "mylabel",
-	"color": "ff0000",
-	"aliases": [],
-	"description": "optional description",
-	"delete": false
+    "name": "mylabel",
+    "color": "ff0000",
+    "aliases": [],
+    "description": "optional description",
+    "delete": false
 }
 ```
 
@@ -177,15 +167,15 @@ As YAML:
 
 ```yaml
 - name: mylabel
-  color: "ff0000"
+  color: 'ff0000'
   aliases: []
   description: optional description
   delete: false
 ```
 
-- The `name` property refers to the label name.
-- The `color` property should be a hex code, with or without the leading `#`.
-- The `delete` property is optional. When set to `true`, matches for this label will _always_ be deleted. This can be used in conjunction with [allowAddedLabels](#allowaddedlabels) to flag specific labels for deletion while leaving non-specified labels intact. Defaults to `false`.
+-   The `name` property refers to the label name.
+-   The `color` property should be a hex code, with or without the leading `#`.
+-   The `delete` property is optional. When set to `true`, matches for this label will _always_ be deleted. This can be used in conjunction with [allowAddedLabels](#allowaddedlabels) to flag specific labels for deletion while leaving non-specified labels intact. Defaults to `false`.
 
 The `aliases` property is optional. When GitHub Label Sync is determining whether to update or delete/create a label it will use the aliases property to prevent used labels from being deleted.
 
@@ -193,20 +183,15 @@ For example, given the following config, GitHub Label Sync will look for labels 
 
 ```json
 {
-	"name": "type: feature",
-	"color": "00ff00",
-	"aliases": [
-		"enhancement",
-		"feature"
-	]
+    "name": "type: feature",
+    "color": "00ff00",
+    "aliases": ["enhancement", "feature"]
 }
 ```
 
 You can find a full example label configuration in this repository ([JSON](labels.json) / [YAML](labels.yml)).
 
-
-Configuration
--------------
+## Configuration
 
 ### `accessToken`
 
@@ -214,7 +199,7 @@ _String_. The [GitHub access token][access-tokens] to use when fetching/updating
 
 ```js
 githubLabelSync({
-	accessToken: 'xxxxxx'
+    accessToken: 'xxxxxx'
 });
 ```
 
@@ -231,7 +216,7 @@ _Boolean_. Whether to allow labels on GitHub which are not specified in your [la
 
 ```js
 githubLabelSync({
-	allowAddedLabels: true
+    allowAddedLabels: true
 });
 ```
 
@@ -247,7 +232,7 @@ _Boolean_. Whether to perform a dry run, only making safe "read" requests to the
 
 ```js
 githubLabelSync({
-	dryRun: true
+    dryRun: true
 });
 ```
 
@@ -263,7 +248,7 @@ _Array_. Your label configuration. See the section on [label config file](#label
 
 ```js
 githubLabelSync({
-	labels: []
+    labels: []
 });
 ```
 
@@ -275,7 +260,7 @@ _String_. The GitHub repo to sync labels to. This should include the user and re
 
 ```js
 githubLabelSync({
-	repo: 'Financial-Times/ft-origami'
+    repo: 'Financial-Times/ft-origami'
 });
 ```
 
@@ -285,9 +270,7 @@ The command-line accepts the repo as an argument after the options:
 github-label-sync Financial-Times/ft-origami
 ```
 
-
-Contributing
-------------
+## Contributing
 
 To contribute to GitHub Label Sync, clone this repo locally and commit your code on a separate branch.
 
@@ -300,13 +283,9 @@ npm run test-unit      # run the unit tests
 npm run test-coverage  # run the unit tests with coverage reporting
 ```
 
-
-License
--------
+## License
 
 This software is published by the Financial Times under the [MIT licence][license].
-
-
 
 [access-tokens]: https://github.com/settings/tokens
 [license]: http://opensource.org/licenses/MIT
